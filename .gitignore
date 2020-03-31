@@ -4,3 +4,5 @@ config/env/env.json
 Makefile
 .DS_Store
 *.sublime*
+package-lock.json
+export/
