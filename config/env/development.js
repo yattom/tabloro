@@ -25,7 +25,7 @@ if (fs.existsSync(envFile)) {
 
 module.exports = {
   // db: 'mongodb://localhost/noobjs_dev',
-  db: 'mongodb://mongo/noobjs_dev',
+  db: 'mongodb://tabloro:password@mongo/noobjs_dev?authSource=admin',
   facebook: {
     clientID: process.env.FACEBOOK_CLIENTID,
     clientSecret: process.env.FACEBOOK_SECRET,
