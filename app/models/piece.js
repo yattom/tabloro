@@ -20,6 +20,9 @@ mongoose.model('User');
  */
 
 var getTags = function (tags) {
+  if(!tags) {
+    tags = [];
+  }
   return tags.join(',');
 };
 
@@ -101,7 +104,8 @@ var PieceSchema = new Schema({
   tags: {
     type: [],
     get: getTags,
-    set: setTags
+    set: setTags,
+    default: function() { return new Array(); }
   },
   image: {
     cdnUri: String,
@@ -124,25 +128,36 @@ var PieceSchema = new Schema({
 PieceSchema.path('title').required(true, 'Piece title cannot be blank');
 
 
-PieceSchema.path('title').validate(function (title, fn) {
-  var Piece = mongoose.model('Piece');
+PieceSchema.path('title').validate({
+  validator: function (title) {
+    var doc = this;
+    return new Promise(function (resolve, reject) {
+      var Piece = mongoose.model('Piece');
 
-  if (this.isNew || this.isModified('title')) {
-    Piece.find({
-      title: title
-    }).exec(function (err, pieces) {
-      fn(!err && pieces.length === 0);
-    });
-  } else fn(true);
-}, 'Piece name already exists');
+      if (doc.isNew || doc.isModified('title')) {
+        Piece.find({
+          title: title
+        }).exec(function (err, pieces) {
+          resolve(!err && pieces.length === 0);
+        });
+      } else resolve(true);
+    })
+  },
+  message: 'Piece name already exists',
+});
 
 
-
-PieceSchema.path('title').validate(function (title, fn) {
-  if (this.isNew || this.isModified('title')) {
-      fn(utils.validateTitle(title));
-  } else fn(true);
-}, 'Name can only contain letters, numbers, space and underscore.');
+PieceSchema.path('title').validate({
+  validator: function (title) {
+    var doc = this;
+    return new Promise(function (resolve, reject) {
+      if (doc.isNew || doc.isModified('title')) {
+        resolve(utils.validateTitle(title));
+      } else resolve(true);
+    })
+  },
+  message: 'Name can only contain letters, numbers, space and underscore.'
+});
 
 
 PieceSchema.pre('save', function (next) {

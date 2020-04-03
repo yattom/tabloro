@@ -4,7 +4,8 @@
  */
 
 module.exports = {
-  db: 'mongodb://localhost/noobjs_test',
+  // db: 'mongodb://localhost/noobjs_test',
+  db: 'mongodb://tabloro:password@localhost/noobjs_test?authSource=admin',
   facebook: {
     clientID: process.env.FACEBOOK_CLIENTID,
     clientSecret: process.env.FACEBOOK_SECRET,
